@@ -7,7 +7,7 @@ import javax.swing.*;
 public class Container extends JFrame {
     public Container() {
         add(new Fase());
-        setTitle("Survival Game");
+        setTitle("Space Shooter v.1");
         setSize(1920, 1080);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);

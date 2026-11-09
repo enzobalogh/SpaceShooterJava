@@ -6,12 +6,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JPanel;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Fase extends JPanel implements ActionListener {
     private Image fundo;
     private Player player;
     private Timer timer;
+    private List <Inimigo1> inimigo1List;
 
     public Fase() {
         setFocusable(true);
@@ -27,6 +29,22 @@ public class Fase extends JPanel implements ActionListener {
         timer = new Timer(5, this);
 
         timer.start();
+        inicializaInimigos();
+    }
+
+    public void inicializaInimigos(){
+        int coordenadas [] = new int [40];
+        inimigo1List = new ArrayList<Inimigo1>();
+
+        for (int i = 0; i < coordenadas.length; i++) {
+            int x = (int)(Math.random()*8000+1920);
+            int y = (int)(Math.random()*650+50);
+
+            Inimigo1 inimigo = new Inimigo1(x, y);
+            inimigo.load();
+
+            inimigo1List.add(inimigo);
+        }
     }
 
 
@@ -84,6 +102,28 @@ public class Fase extends JPanel implements ActionListener {
 
             gTiro.dispose();
         }
+        for (Inimigo1 inimigo1 : inimigo1List){
+            if (inimigo1.getImagem() == null) {
+                continue;
+            }
+
+            Graphics2D gInimigo1 = (Graphics2D) graficos.create();
+
+            gInimigo1.rotate(
+                    Math.toRadians(90),
+                    inimigo1.getX() + inimigo1.getImagem().getWidth(null) / 2.0,
+                    inimigo1.getY() + inimigo1.getImagem().getHeight(null) / 2.0
+            );
+
+            gInimigo1.drawImage(
+                    inimigo1.getImagem(),
+                    inimigo1.getX(),
+                    inimigo1.getY(),
+                    this
+            );
+
+            gInimigo1.dispose();
+        }
 
         graficos.dispose();
     }
@@ -102,6 +142,16 @@ public class Fase extends JPanel implements ActionListener {
                 } else {
                     tiros.remove(i);
                 }
+        }
+
+        for (int o = 0; o < inimigo1List.size(); o++) {
+            Inimigo1 in = inimigo1List.get(o);
+                if(in.isVisivel()){
+                    in.update();
+                } else{
+                    inimigo1List.remove(o);
+                }
+
         }
 
         repaint();
