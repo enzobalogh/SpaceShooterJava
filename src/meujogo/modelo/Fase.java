@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JPanel;
+import java.util.List;
 
 public class Fase extends JPanel implements ActionListener {
     private Image fundo;
@@ -29,27 +30,80 @@ public class Fase extends JPanel implements ActionListener {
     }
 
 
-    public void paint(Graphics g) {
-        Graphics2D graficos = (Graphics2D) g;
-        graficos.drawImage(fundo, 0, 0, null);
-        graficos.rotate(
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        Graphics2D graficos = (Graphics2D) g.create();
+
+        // Desenha o fundo
+        graficos.drawImage(fundo, 0, 0, this);
+
+        // Desenha a nave com rotação independente
+        Graphics2D gPlayer = (Graphics2D) graficos.create();
+
+        gPlayer.rotate(
                 Math.toRadians(90),
                 player.getX() + player.getImagem().getWidth(null) / 2.0,
                 player.getY() + player.getImagem().getHeight(null) / 2.0
         );
-        graficos.drawImage(
+
+        gPlayer.drawImage(
                 player.getImagem(),
                 player.getX(),
                 player.getY(),
                 this
         );
+
+        gPlayer.dispose();
+
+        // Desenha os tiros
+        List<Tiro> tiros = player.getTiros();
+
+        for (Tiro m : tiros) {
+
+            if (m.getImagem() == null) {
+                continue;
+            }
+
+            Graphics2D gTiro = (Graphics2D) graficos.create();
+
+            gTiro.rotate(
+                    Math.toRadians(90),
+                    m.getX() + m.getImagem().getWidth(null) / 2.0,
+                    m.getY() + m.getImagem().getHeight(null) / 2.0
+            );
+
+            gTiro.drawImage(
+                    m.getImagem(),
+                    m.getX(),
+                    m.getY(),
+                    this
+            );
+
+            gTiro.dispose();
+        }
+
         graficos.dispose();
     }
+
 
 
     @Override
     public void actionPerformed(ActionEvent e) {
         player.update();
+        List<Tiro> tiros = player.getTiros();
+
+        for(int i = 0;i<tiros.size();i++){
+            Tiro m = tiros.get(i);
+                if(m.isVisivel()){
+                    m.update();
+                } else {
+                    tiros.remove(i);
+                }
+        }
+
         repaint();
     }
 
