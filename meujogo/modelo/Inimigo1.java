@@ -27,9 +27,10 @@ public class Inimigo1 {
     }
     public void update(){
         this.x -= VELOCIDADE;
-        //if (this.x > LARGURA){
-        //    isVisivel = false;
-        //}
+
+        if (this.x + this.imagem.getWidth(null) < 0) {
+            isVisivel = false;
+        }
     }
     public Rectangle getBounds(){
         return new Rectangle(x, y, largura, altura);
